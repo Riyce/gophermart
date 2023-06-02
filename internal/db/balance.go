@@ -80,6 +80,7 @@ func (b *BalanceController) Withdraw(userID int, withdraw models.Withdraw) error
 	}
 
 	defer tx.Rollback()
+
 	updateQuery := fmt.Sprintf(updateBalanceQuery, usersTableName)
 	_, updateErr := tx.Exec(updateQuery, newBalance, newWithdraw, userID)
 	if updateErr != nil {
@@ -137,7 +138,7 @@ func (b *BalanceController) GetWithdrawsHistory(userID int) ([]models.Withdraw, 
 			log.Error().
 				Err(scanErr).
 				Str("service", balanceDB).
-				Msg(fmt.Sprintf("error on sczn withdraws history for user %d", userID))
+				Msg(fmt.Sprintf("error on scan withdraws history for user %d", userID))
 			return withdrawList, utils.ErrSomethingWentWrong
 		}
 		withdrawList = append(withdrawList, record)

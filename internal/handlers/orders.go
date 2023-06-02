@@ -30,17 +30,26 @@ func (h *Handler) addOrder(ctx *gin.Context) {
 	if err != nil {
 		if errors.Is(err, utils.ErrUsersOrderAlreadyExists) {
 			ctx.Status(http.StatusOK)
-		} else if errors.Is(err, utils.ErrOtherOrderAlreadyExists) {
-			ctx.Status(http.StatusConflict)
-		} else if errors.Is(err, utils.ErrWrongOrderNumber) {
-			ctx.Status(http.StatusUnprocessableEntity)
-		} else {
-			ctx.Status(http.StatusInternalServerError)
+			return
 		}
-	} else {
-		log.Info().Str("service", orderHandler).Msg(fmt.Sprintf("user %d addOrder OK", intUserID))
-		ctx.Status(http.StatusAccepted)
+
+		if errors.Is(err, utils.ErrOtherOrderAlreadyExists) {
+			ctx.Status(http.StatusConflict)
+			return
+		}
+
+		if errors.Is(err, utils.ErrWrongOrderNumber) {
+			ctx.Status(http.StatusUnprocessableEntity)
+			return
+		}
+
+		ctx.Status(http.StatusInternalServerError)
+		return
 	}
+
+	log.Info().Str("service", orderHandler).Msg(fmt.Sprintf("user %d addOrder OK", intUserID))
+	ctx.Status(http.StatusAccepted)
+
 }
 
 func (h *Handler) getOrders(ctx *gin.Context) {
@@ -61,7 +70,8 @@ func (h *Handler) getOrders(ctx *gin.Context) {
 	log.Info().Str("service", orderHandler).Msg(fmt.Sprintf("user %d getOrders OK", intUserID))
 	if len(orders) == 0 {
 		ctx.JSON(http.StatusNoContent, nil)
-	} else {
-		ctx.JSON(http.StatusOK, orders)
+		return
 	}
+
+	ctx.JSON(http.StatusOK, orders)
 }

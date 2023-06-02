@@ -44,10 +44,9 @@ func (h *Handler) signUp(ctx *gin.Context) {
 		if errors.Is(createErr, utils.ErrUserAlreadyExists) {
 			ctx.AbortWithStatus(http.StatusConflict)
 			return
-		} else {
-			ctx.AbortWithStatus(http.StatusInternalServerError)
-			return
 		}
+		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
 	}
 
 	log.Info().Str("service", authHandler).Msg(fmt.Sprintf("user %s created", user.Login))

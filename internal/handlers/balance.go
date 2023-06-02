@@ -52,13 +52,13 @@ func (h *Handler) withdraw(ctx *gin.Context) {
 		if errors.Is(err, utils.ErrNotEnoughBalance) {
 			ctx.AbortWithStatus(http.StatusPaymentRequired)
 			return
-		} else if errors.Is(err, utils.ErrWrongOrderNumber) {
+		}
+		if errors.Is(err, utils.ErrWrongOrderNumber) {
 			ctx.AbortWithStatus(http.StatusUnprocessableEntity)
 			return
-		} else {
-			ctx.AbortWithStatus(http.StatusInternalServerError)
-			return
 		}
+		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
 	}
 
 	log.Info().Str("service", balanceHandler).
