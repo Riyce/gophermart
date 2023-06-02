@@ -7,8 +7,8 @@ import (
 
 type DBOrder interface {
 	UpdateOrderStatus(orderID string) error
-	ProcessOrder(order _order) error
-	GetUnprocessedOrders() ([]_order, error)
+	ProcessOrder(order order) error
+	GetUnprocessedOrders() ([]order, error)
 }
 
 type DBOrderUpdater struct {
@@ -19,8 +19,8 @@ func NewDBOrderUpdater(db *sql.DB) *DBOrderUpdater {
 	return &DBOrderUpdater{db: db}
 }
 
-func (o *DBOrderUpdater) GetUnprocessedOrders() ([]_order, error) {
-	var ordersList []_order
+func (o *DBOrderUpdater) GetUnprocessedOrders() ([]order, error) {
+	var ordersList []order
 	rows, err := o.db.Query(getUnprocessedOrdersQuery, models.New, models.Processing)
 	if err != nil || rows.Err() != nil {
 		if err != nil {
@@ -31,7 +31,7 @@ func (o *DBOrderUpdater) GetUnprocessedOrders() ([]_order, error) {
 	}
 
 	for rows.Next() {
-		var order _order
+		var order order
 		if err := rows.Scan(&order.Order, &order.Status); err != nil {
 			return ordersList, err
 		}
@@ -54,7 +54,7 @@ func (o *DBOrderUpdater) UpdateOrderStatus(orderID string) error {
 	return nil
 }
 
-func (o *DBOrderUpdater) ProcessOrder(order _order) error {
+func (o *DBOrderUpdater) ProcessOrder(order order) error {
 	var userID int
 	row := o.db.QueryRow(setProcessedStatusQuery, order.Status, order.Accrual, order.Order)
 	if row.Err() != nil {

@@ -23,8 +23,8 @@ func NewClientDaemon(addr string, db DBOrder) *ClientDaemon {
 	return &ClientDaemon{addr: addr, db: db}
 }
 
-func (d *ClientDaemon) sendRequest(orderID string) (_order, int, error) {
-	var order _order
+func (d *ClientDaemon) sendRequest(orderID string) (order, int, error) {
+	var order order
 
 	requestURL := fmt.Sprintf("%s/api/orders/%s", d.addr, orderID)
 
